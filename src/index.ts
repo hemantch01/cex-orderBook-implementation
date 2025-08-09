@@ -1,11 +1,14 @@
 import express,{Request,Response} from "express";
-import { Asks, Bids } from "./types/type-all";
+import { Asks, Bids,User} from "./types/type-all";
+
 const  PORT = 3000;
+const  TICKER = "TATA";
 const app = express();
 app.use(express.json());
 
 const bids:Bids[]=[];
 const asks:Asks[]=[];
+const users:User[]=[];
 
 function matchOrders(price:number,qty:number,side:string,userId:number):number{
     // match logic
@@ -46,10 +49,44 @@ res.json({
     
 }
 
+const currentDepth = (req:Request,res:Response)=>{
+    // parse the data of current bids and asks and return the user data
+    const cumulatedAsks =new Map<number,number>(); 
+    const cumulatedBids = new Map<number,number>();
+    for(let ele of asks){
+        let ask = cumulatedAsks.get(ele.price)||0;
+        cumulatedAsks.set(ele.price,ask+ele.qty);  
+    }
+    for(let ele of asks){
+        let ask = cumulatedBids.get(ele.price)||0;
+        cumulatedBids.set(ele.price,ask+ele.qty);  
+    }
+    res.json({
+        asks:cumulatedAsks,
+        bids:cumulatedBids,
+    })
+}
 
+const checkBalance = (req:Request,res:Response)=>{
+const user = req.params.userId;
+    const userind= users.find((u)=>u.userId===Number(user));
+
+if(!userind){
+    res.json({
+        msg:"user doesn't exist!",
+    })
+}
+else{
+    res.json({
+        balance:userind.balance,
+    })
+}
+}
 
 // different routes
 app.get("/order", orders);
+app.get("/depth", currentDepth);
+app.get("/balance/:userId", checkBalance);
 
 app.listen( PORT , ()=>{
 console.log(`app is listening on port ${PORT}`);
