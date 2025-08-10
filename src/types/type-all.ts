@@ -1,3 +1,5 @@
+import { TICKER } from "..";
+
 export type Bids = {
     userId:number,
     price:number,
@@ -5,7 +7,9 @@ export type Bids = {
 }
 export type User = {
     userId:number,
-    ticker:"TATA",
-    balance:number,
+    balances:{
+        "TATA":number,
+        balance:number,
+    }
 }
 export type Asks = Bids;
