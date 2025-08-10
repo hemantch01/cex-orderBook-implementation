@@ -86,7 +86,6 @@ function matchOrders(price:number,qtyFromUser:number,side:string,userId:number):
         }
     }
    }
-   return 1;
 }
 
 const orders = (req:Request,res:Response)=>{
